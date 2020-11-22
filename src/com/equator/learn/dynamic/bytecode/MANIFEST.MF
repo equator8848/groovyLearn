@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Agent-Class: com.equator.learn.dynamic.bytecode.ByteCodeAgent
+Created-By: equator
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
+Boot-Class-Path: javassist-3.27.0-GA.jar
