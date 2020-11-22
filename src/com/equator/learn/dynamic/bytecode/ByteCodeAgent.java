@@ -23,6 +23,7 @@ public class ByteCodeAgent {
         inst.addTransformer(new ByteCodeTransformer(), true);
         try {
             //重定义类并载入新的字节码
+            // 生成VerifyError错误，解决方法：-Xverify:none，原因是没有更新StackMapTable？
             inst.retransformClasses(TransformationA.class);
             log.info("字节码替换成功");
         } catch (Exception e) {

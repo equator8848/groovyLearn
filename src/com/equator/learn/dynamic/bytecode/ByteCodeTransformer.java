@@ -33,9 +33,15 @@ public class ByteCodeTransformer implements ClassFileTransformer {
                     "        log.info(\"转换数据源：{}\", source);\n" +
                     "        String sourceDataStr = getSourceData(source);\n" +
                     "        if (org.apache.commons.lang3.StringUtils.isNotEmpty(sourceDataStr)) {\n" +
-                    "            com.equator.learn.dynamic.base.LogData logData = com.equator.learn.dynamic.base.GsonUtils.fromJson(sourceDataStr, com.equator.learn.dynamic.base.LogData.class);\n" +
-                    "            logData.setData(new java.lang.String(\"666\"));\n" +
-                    "            System.out.println(logData);\n" +
+                    "            com.google.gson.JsonObject logData = com.equator.learn.dynamic.base.GsonUtils.parseString(sourceDataStr).getAsJsonObject();\n" +
+                    "            log.info(\"data: {}\", logData);\n" +
+                    "            if ((logData.get(\"logTime\").getAsInt() & 1) == 0) {\n" +
+                    "                logData.addProperty(\"value\", new java.lang.Integer(logData.get(\"value\").getAsInt() + 666));\n" +
+                    "                setTargetData(\"Topic4\", logData.toString());\n" +
+                    "            }\n" +
+                    "            if ((logData.get(\"logTime\").getAsInt() & 1) == 1) {\n" +
+                    "                setTargetData(\"Topic3\", logData.toString());\n" +
+                    "            }\n" +
                     "        }\n" +
                     "    }");
             ctClass.writeFile("/Users/libinkai/Desktop");

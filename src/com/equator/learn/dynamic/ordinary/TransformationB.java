@@ -49,7 +49,7 @@ public class TransformationB implements Runnable {
             com.google.gson.JsonObject logData = com.equator.learn.dynamic.base.GsonUtils.parseString(sourceDataStr).getAsJsonObject();
             log.info("data: {}", logData);
             if ((logData.get("logTime").getAsInt() & 1) == 0) {
-                logData.addProperty("value", logData.get("value").getAsInt() + 666);
+                logData.addProperty("value", new java.lang.Integer(logData.get("value").getAsInt() + 666));
                 setTargetData("Topic4", logData.toString());
             }
             if ((logData.get("logTime").getAsInt() & 1) == 1) {
