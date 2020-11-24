@@ -2,14 +2,10 @@ package com.equator.learn.dynamic.base;
 
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
-
-import java.util.Date;
 
 @Slf4j
 public class Producer implements Runnable {
-    private final int MAX_RETRY = 5;
     private String topic;
     private Jedis jedis;
 
@@ -36,7 +32,7 @@ public class Producer implements Runnable {
         while (true) {
             produce();
             try {
-                Thread.sleep(1000 * 5);
+                Thread.sleep(2 * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

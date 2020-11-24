@@ -1,16 +1,9 @@
 package com.equator.learn.dynamic.bytecode;
 
 import com.equator.learn.dynamic.ordinary.TransformationA;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
-import java.security.ProtectionDomain;
 
 /**
  * @author libinkai

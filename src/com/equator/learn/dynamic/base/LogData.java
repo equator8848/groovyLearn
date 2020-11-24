@@ -1,7 +1,5 @@
 package com.equator.learn.dynamic.base;
 
-import lombok.SneakyThrows;
-
 public class LogData {
     /**
      * 日志来源

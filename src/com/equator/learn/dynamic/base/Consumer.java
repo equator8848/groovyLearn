@@ -54,5 +54,6 @@ public class Consumer implements Runnable {
     public static void main(String[] args) {
         // 下游消费数据
         new Thread(new Consumer("Topic3")).start();
+        new Thread(new Consumer("Topic4")).start();
     }
 }

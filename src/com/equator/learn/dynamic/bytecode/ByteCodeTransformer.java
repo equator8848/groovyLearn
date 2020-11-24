@@ -1,12 +1,7 @@
 package com.equator.learn.dynamic.bytecode;
 
-import com.equator.learn.dynamic.base.GsonUtils;
-import com.equator.learn.dynamic.base.LogData;
-import com.google.gson.JsonObject;
 import javassist.*;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;

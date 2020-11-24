@@ -4,7 +4,6 @@ import com.equator.learn.dynamic.base.GsonUtils;
 import com.equator.learn.dynamic.base.LogData;
 import com.equator.learn.dynamic.base.MessageQueue;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 
 @Slf4j
@@ -18,14 +17,14 @@ public class TransformationA implements Runnable {
     private void start() {
         log.info("转换A启动，有点慢...");
         try {
-            Thread.sleep(1000 * 3);
+            Thread.sleep(1000 * 15);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         log.info("转换A终于启动了！");
         while (true) {
             try {
-                Thread.sleep(1000 * 3);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -46,7 +45,6 @@ public class TransformationA implements Runnable {
 
     public void transform() {
         String source = "Topic1";
-        // log.info("转换数据源：{}", source);
         String sourceDataStr = getSourceData(source);
         if (org.apache.commons.lang3.StringUtils.isNotEmpty(sourceDataStr)) {
             LogData logData = GsonUtils.fromJson(sourceDataStr, LogData.class);
