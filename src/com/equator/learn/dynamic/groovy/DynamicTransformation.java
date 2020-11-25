@@ -1,9 +1,8 @@
 package com.equator.learn.dynamic.groovy;
 
-import com.equator.learn.dynamic.base.GsonUtils;
-import com.equator.learn.dynamic.base.LogData;
 import com.equator.learn.dynamic.base.MessageQueue;
-import com.equator.learn.dynamic.ordinary.TransformationA;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyObject;
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 
@@ -12,13 +11,17 @@ import redis.clients.jedis.Jedis;
  * @date 2020/11/25 12:33 上午
  */
 @Slf4j
-public class DynamicTransformation implements Runnable{
-
-
+public class DynamicTransformation implements Runnable {
     private Jedis jedis;
+    private String currentVersion;
+    private GroovyObject instance;
 
     public DynamicTransformation() {
         this.jedis = MessageQueue.getMQ().getClient();
+    }
+
+    private String getConfig(String key) {
+        return jedis.get(key);
     }
 
     private void start() {
@@ -29,37 +32,33 @@ public class DynamicTransformation implements Runnable{
             e.printStackTrace();
         }
         log.info("Dynamic转换终于启动了！");
+        // 获取脚本版本与脚本
+        currentVersion = getConfig("transformation_version");
+        String transformationScript = getConfig("transformation_script");
+        // 解析脚本构建实例
+        GroovyClassLoader groovyClassLoader = new GroovyClassLoader();
+        Class parseClass = groovyClassLoader.parseClass(transformationScript);
+        try {
+            instance = (GroovyObject) parseClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
         while (true) {
             try {
+                instance.invokeMethod("transform", null);
+                String latestVersion = getConfig("transformation_version");
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+                if (!currentVersion.equals(latestVersion)) {
+                    System.out.printf("切换版本，当前版本 %s, 最新版本 %s %n", currentVersion, latestVersion);
+                    // 去掉此行可以引发Full GC
+                    currentVersion = latestVersion;
+                    groovyClassLoader = new GroovyClassLoader();
+                    transformationScript = getConfig("transformation_script");
+                    parseClass = groovyClassLoader.parseClass(transformationScript);
+                    instance = (GroovyObject) parseClass.newInstance();
+                }
+            } catch (InstantiationException | IllegalAccessException | InterruptedException e) {
                 e.printStackTrace();
-            }
-            transform();
-        }
-    }
-
-    private String getSourceData(String topic) {
-        String data = jedis.rpop(topic);
-        log.info("Dynamic转换 getSourceData --- topic: {}, data: {}", topic, data);
-        return data;
-    }
-
-    private void setTargetData(String topic, String data) {
-        log.info("Dynamic转换 setTargetData --- topic: {}, data: {}", topic, data);
-        jedis.lpush(topic, data);
-    }
-
-    public void transform() {
-        String source = "Topic1";
-        String sourceDataStr = getSourceData(source);
-        if (org.apache.commons.lang3.StringUtils.isNotEmpty(sourceDataStr)) {
-            LogData logData = GsonUtils.fromJson(sourceDataStr, LogData.class);
-            if ((logData.getLogTime() & 1) == 0) {
-                setTargetData("Topic3", sourceDataStr);
-            }
-            if ((logData.getLogTime() & 1) == 1) {
-                setTargetData("Topic4", sourceDataStr);
             }
         }
     }
@@ -70,6 +69,6 @@ public class DynamicTransformation implements Runnable{
     }
 
     public static void main(String[] args) {
-        new Thread(new TransformationA()).start();
+        new Thread(new DynamicTransformation()).start();
     }
 }
